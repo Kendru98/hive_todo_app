@@ -35,7 +35,7 @@ class _ToDoPageState extends State<ToDoPage> {
     if (thingstodo.isEmpty) {
       return const Center(
         child: Text(
-          'No expenses yet!',
+          'Brak elementów do wyświetlenia!',
           style: TextStyle(fontSize: 24),
         ),
       );
