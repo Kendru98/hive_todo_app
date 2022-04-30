@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
+import 'package:hive_todo_app/pages/todocreatepage.dart';
 import '../boxes.dart';
 import '../model/thingstodo.dart';
 
@@ -12,7 +12,6 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  final List<ToDo> thingstodo = [];
   @override
   void dispose() {
     Hive.box('todos').close();
@@ -22,17 +21,26 @@ class _ToDoPageState extends State<ToDoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ValueListenableBuilder<Box<ToDo>>(
-            valueListenable: Boxes.getToDos().listenable(),
-            builder: (context, box, _) {
-              final todos = box.values.toList().cast<ToDo>();
+      body: ValueListenableBuilder<Box<ToDo>>(
+          valueListenable: Boxes.getToDos().listenable(),
+          builder: (context, box, _) {
+            final todos = box.values.toList().cast<ToDo>();
 
-              return buildContent(todos);
-            }));
+            return buildContent(todos);
+          }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: ((context) => AddEditToDos())));
+
+          //navigation to addtodoeditcreate
+        },
+      ),
+    );
   }
 
   Widget buildContent(List<ToDo> todos) {
-    if (thingstodo.isEmpty) {
+    if (todos.isEmpty) {
       return const Center(
         child: Text(
           'Brak elementów do wyświetlenia!',
@@ -40,15 +48,6 @@ class _ToDoPageState extends State<ToDoPage> {
         ),
       );
     } else {
-      // final netExpense = todos.fold<double>(
-      //   0,
-      //   (previousValue, todo) => todo.isExpense
-      //       ? previousValue - todo.amount
-      //       : previousValue + todo.amount,
-      // );
-      // final newExpenseString = '\$${netExpense.toStringAsFixed(2)}';
-      // final color = netExpense > 0 ? Colors.green : Colors.red;
-
       return Column(
         children: [
           const SizedBox(height: 24),
@@ -75,7 +74,7 @@ class _ToDoPageState extends State<ToDoPage> {
     // final color = todo.isExpense ? Colors.red : Colors.green;
 
     //  final amount = '\$' + todo.amount.toStringAsFixed(2);
-    final date = DateFormat.yMMMd().format(todo.createdDate);
+    //final date = DateFormat.yMMMd().format(todo.createdDate);
 
     return Card(
       color: Colors.white,
@@ -86,7 +85,7 @@ class _ToDoPageState extends State<ToDoPage> {
           maxLines: 2,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        subtitle: Text(date),
+        //subtitle: Text(date),
         trailing: Text(
           todo.createdDate.toIso8601String(),
           style: const TextStyle(

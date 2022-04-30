@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/model/thingstodo.dart';
-import 'package:hive_todo_app/pages/homepage.dart';
+import 'package:hive_todo_app/pages/todospage.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 import 'splash_screen.dart';
 
