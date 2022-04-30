@@ -145,6 +145,8 @@ class _AddEditToDosState extends State<AddEditToDos> {
     print(name);
     print(listtodo);
     final ToDoData = ToDo()
+      ..setreminder = true
+      ..endDate = DateTime.now()
       ..name = name
       ..createdDate = DateTime.now()
       ..thingstodo = listtodo;
