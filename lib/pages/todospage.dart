@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_todo_app/pages/detailstodo_page.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:intl/intl.dart';
 import '../boxes.dart';
 import '../model/thingstodo.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -16,6 +19,13 @@ class _ToDoPageState extends State<ToDoPage> {
   void dispose() {
     Hive.box('todos').close();
     super.dispose(); //7:45
+  }
+
+  @override
+  void initState() {
+    initializeDateFormatting();
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -71,31 +81,35 @@ class _ToDoPageState extends State<ToDoPage> {
     BuildContext context,
     ToDo todo,
   ) {
-    // final color = todo.isExpense ? Colors.red : Colors.green;
-
-    //  final amount = '\$' + todo.amount.toStringAsFixed(2);
-    //final date = DateFormat.yMMMd().format(todo.createdDate);
+    final date = DateFormat.yMMMd('pl').format(todo.createdDate);
 
     return Card(
       color: Colors.white,
-      child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        title: Text(
-          todo.name,
-          maxLines: 2,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) => DetailsTodo(
+                        todo: todo,
+                      ))));
+        },
+        child: ListTile(
+          //tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          title: Text(
+            todo.name,
+            maxLines: 2,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          //subtitle: Text(date),
+          trailing: Text(
+            date, //todo.createdDate.toIso8601String(),
+            style: const TextStyle(
+                color: Colors.lightBlue,
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
         ),
-        //subtitle: Text(date),
-        trailing: Text(
-          todo.createdDate.toIso8601String(),
-          style: const TextStyle(
-              color: Colors.lightBlue,
-              fontWeight: FontWeight.bold,
-              fontSize: 16),
-        ),
-        // children: [
-        //   buildButtons(context, todo),
-        // ],
       ),
     );
   }

@@ -24,12 +24,6 @@ class _AddEditToDosState extends State<AddEditToDos> {
   List<String> tasklist = [];
   @override
   Widget build(BuildContext context) {
-    bool value = false;
-    // if (widget.note != null) {
-    //   tasktitle.text = widget.note!.title;
-    //   notecontent.text = widget.note!.content;
-    // }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
