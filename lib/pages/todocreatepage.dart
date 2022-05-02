@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+//import 'package:hive/hive.dart';
 import 'dart:core';
-import 'package:hive_flutter/hive_flutter.dart';
+//import 'package:hive_flutter/hive_flutter.dart';
 import '../boxes.dart';
 import '../model/thingstodo.dart';
 
@@ -12,11 +12,11 @@ class AddEditToDos extends StatefulWidget {
 
 class _AddEditToDosState extends State<AddEditToDos> {
   @override
-  void dispose() {
-    Hive.close();
+  // void dispose() {
+  //   Hive.close();
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 
   final _formKey = GlobalKey<FormState>();
   final listitem = TextEditingController();
@@ -131,20 +131,18 @@ class _AddEditToDosState extends State<AddEditToDos> {
   //   Navigator.of(context).pop();
   // }
 
-  Future addNote() async {}
-
-  Future updateNote() async {}
-
   Future AddToDo(String name, List<String> listtodo) async {
     print(name);
     print(listtodo);
+    var _isChecked = List<bool>.filled(listtodo.length, false);
     final ToDoData = ToDo()
       ..setreminder = true
       ..endDate = DateTime.now()
       ..name = name
       ..createdDate = DateTime.now()
-      ..thingstodo = listtodo;
-
+      ..thingstodo = listtodo
+      ..progress = 0
+      ..isChecked = _isChecked;
     final box = Boxes.getToDos();
     box.add(ToDoData);
   }

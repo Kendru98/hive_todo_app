@@ -18,4 +18,10 @@ class ToDo extends HiveObject {
 
   @HiveField(4)
   late List<String> thingstodo;
+
+  @HiveField(5)
+  late double progress;
+
+  @HiveField(6)
+  late List<bool> isChecked;
 }

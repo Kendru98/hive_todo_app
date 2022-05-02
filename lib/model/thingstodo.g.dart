@@ -21,13 +21,15 @@ class ToDoAdapter extends TypeAdapter<ToDo> {
       ..createdDate = fields[1] as DateTime
       ..setreminder = fields[2] as bool
       ..endDate = fields[3] as DateTime
-      ..thingstodo = (fields[4] as List).cast<String>();
+      ..thingstodo = (fields[4] as List).cast<String>()
+      ..progress = fields[5] as double
+      ..isChecked = (fields[6] as List).cast<bool>();
   }
 
   @override
   void write(BinaryWriter writer, ToDo obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -37,7 +39,11 @@ class ToDoAdapter extends TypeAdapter<ToDo> {
       ..writeByte(3)
       ..write(obj.endDate)
       ..writeByte(4)
-      ..write(obj.thingstodo);
+      ..write(obj.thingstodo)
+      ..writeByte(5)
+      ..write(obj.progress)
+      ..writeByte(6)
+      ..write(obj.isChecked);
   }
 
   @override

@@ -38,6 +38,8 @@ dependencies:
   intl: ^0.17.0
   google_fonts: ^2.3.2
   shared_preferences: ^2.0.13
+  percent_indicator: ^4.0.0
+  font_awesome_flutter: ^10.1.0
   
 dev_dependencies:
   flutter_test:
