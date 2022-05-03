@@ -14,25 +14,17 @@ class DetailsTodo extends StatefulWidget {
 class _DetailsTodoState extends State<DetailsTodo> {
   @override
   initState() {
-    // openbox();
     super.initState();
-
-    //_isChecked = List<bool>.filled(widget.todo.thingstodo.length, false);
   }
-
-  // openbox() async {
-  //   await Hive.openBox<ToDo>('todos');
-  // }
 
   Widget build(BuildContext context) {
     @override
     final date = DateFormat.yMMMd('pl').format(widget.todo.createdDate);
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black), //ikonki kolor
+
+        //ikonki kolor
         actions: [editButton(), deleteButton(widget.todo)],
       ),
       body: SingleChildScrollView(
@@ -41,15 +33,9 @@ class _DetailsTodoState extends State<DetailsTodo> {
             Text(
               widget.todo.name,
               maxLines: 2,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: Theme.of(context).textTheme.headline1,
             ),
-            Text(
-              date,
-              style: const TextStyle(
-                  color: Colors.lightBlue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
-            ),
+            Text(date, style: Theme.of(context).textTheme.headline2),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -57,10 +43,8 @@ class _DetailsTodoState extends State<DetailsTodo> {
               itemBuilder: (BuildContext context, int index) {
                 return CheckboxListTile(
                     controlAffinity: ListTileControlAffinity.leading,
-                    title: Text(
-                      widget.todo.thingstodo[index],
-                      style: const TextStyle(fontSize: 18, color: Colors.black),
-                    ),
+                    title: Text(widget.todo.thingstodo[index],
+                        style: Theme.of(context).textTheme.headline1),
                     value: widget.todo.isChecked[index],
                     onChanged: (value) {
                       setState(() {

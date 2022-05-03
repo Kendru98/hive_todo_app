@@ -1,13 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/pages/detailstodo_page.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../boxes.dart';
 import '../model/thingstodo.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../utils/dark_theme.dart';
+import '../utils/user_preferences.dart';
+
+//final ThemeHelper = ThemeData();
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -32,7 +38,39 @@ class _ToDoPageState extends State<ToDoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool switchstate = UserSimplePreferences.getDarkTheme() ?? false;
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
+        // backgroundColor: Colors.white, //ThemeProvider.getTheme,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              FontAwesomeIcons.sun,
+              color: Colors.yellowAccent,
+            ),
+            CupertinoSwitch(
+                value: switchstate,
+                onChanged: (bool newValue) {
+                  //ThemeHelper.darktheme = newValue;
+                  //UserSimplePreferences.setDarkTheme(newValue);
+                  setState(() {
+                    switchstate;
+                  });
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .swapTheme();
+                }),
+            Icon(
+              FontAwesomeIcons.moon,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+
+        elevation: 0,
+      ),
       body: ValueListenableBuilder<Box<ToDo>>(
           valueListenable: Boxes.getToDos().listenable(),
           builder: (context, box, _) {
@@ -42,7 +80,7 @@ class _ToDoPageState extends State<ToDoPage> {
           }),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.white,
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFF2a3592),
         elevation: 10,
         hoverColor: Colors.green,
         tooltip: 'Dodaj nową listę',
@@ -94,45 +132,39 @@ class _ToDoPageState extends State<ToDoPage> {
     final date = DateFormat.yMMMd('pl').format(todo.createdDate);
 
     return Card(
-        color: Colors.white,
+        //  color: Colors.white,
         child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: ((context) => DetailsTodo(
-                          todo: todo,
-                        ))));
-          },
-          child: ListTile(
-            //tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            title: Text(
-              todo.name,
-              maxLines: 2,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: ((context) => DetailsTodo(
+                      todo: todo,
+                    ))));
+      },
+      child: ListTile(
+        //tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        title: Text(todo.name,
+            maxLines: 2, style: Theme.of(context).textTheme.headline1
+            //style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-            //subtitle: Text(date),
-            trailing: Text(
-              date, //todo.createdDate.toIso8601String(),
-              style: const TextStyle(
-                  color: Colors.lightBlue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
-            ),
-            subtitle: Padding(
-              padding: EdgeInsets.all(15.0),
-              child: new LinearPercentIndicator(
-                width: MediaQuery.of(context).size.width - 300,
-                animation: true,
-                lineHeight: 20.0,
-                animationDuration: 2000,
-                percent: todo.progress / 100,
-                center: Text('${todo.progress} %'),
-                barRadius: Radius.circular(20),
-                progressColor: Colors.greenAccent,
-              ),
-            ),
+        //subtitle: Text(date),
+        trailing: Text(date, //todo.createdDate.toIso8601String(),
+            style: Theme.of(context).textTheme.headline1),
+        subtitle: Padding(
+          padding: EdgeInsets.all(15.0),
+          child: new LinearPercentIndicator(
+            width: MediaQuery.of(context).size.width - 200,
+            animation: true,
+            lineHeight: 20.0,
+            animationDuration: 2000,
+            percent: todo.progress / 100,
+            center: Text('${todo.progress.ceil()} %'),
+            barRadius: Radius.circular(20),
+            progressColor: Color(0xFFBB86FC),
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }
