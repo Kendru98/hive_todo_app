@@ -24,12 +24,7 @@ class _DetailsTodoState extends State<DetailsTodo> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-
-        //ikonki kolor
-        actions: [
-          deleteButton(widget.todo),
-          editButton(widget.todo)
-        ], //editButton(widget.todo)
+        actions: [deleteButton(widget.todo), editButton(widget.todo)],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -67,9 +62,6 @@ class _DetailsTodoState extends State<DetailsTodo> {
   Widget deleteButton(ToDo todo) => IconButton(
         icon: Icon(Icons.delete),
         onPressed: () async {
-          // if (Hive.box('todos').isOpen == true) {
-          //   Hive.openBox('todos');
-          // }
           await todo.delete();
           Navigator.pop(context);
         },
@@ -80,10 +72,6 @@ class _DetailsTodoState extends State<DetailsTodo> {
         onPressed: () async {
           await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => AddEditToDos(toDo: toDo)));
-
-          // await Navigator.of(context).push(MaterialPageRoute(
-          //      builder: (context) => AddEditNoteScreen(note: notes)));
-          //  refreshNotes();
         },
       );
 

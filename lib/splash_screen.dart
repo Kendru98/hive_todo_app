@@ -15,11 +15,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // bool firstrun = UserSimplePreferences.getFirstRun() ?? false;
-    // if (firstrun == true) {
-    //   Navigator.push(
-    //       context, MaterialPageRoute(builder: ((context) => const ToDoPage())));
-    // }
   }
 
   @override

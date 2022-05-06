@@ -40,11 +40,6 @@ class _ToDoPageState extends State<ToDoPage> {
 
   void listenNotifications() => NotificationApi.onNotifications.stream.listen;
 
-  // void onClickedNotification(String? payload) =>
-  //     Navigator.of(context).push(MaterialPageRoute(
-  //       builder: (context) => ToDoPage(),
-  //     ));
-
   _refreshdate() {
     setState(() {
       Boxes.getToDos();
@@ -140,7 +135,6 @@ class _ToDoPageState extends State<ToDoPage> {
     final date = DateFormat.yMMMd('pl').format(todo.createdDate);
 
     return Card(
-      //  color: Colors.white,
       child: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -165,8 +159,7 @@ class _ToDoPageState extends State<ToDoPage> {
                 percent: todo.progress / 100,
                 center: Text('${todo.progress.ceil()} %'),
                 barRadius: Radius.circular(20),
-                progressColor: checkprogress(todo.progress) //Color(0xFFBB86FC),
-                ),
+                progressColor: checkprogress(todo.progress)),
           ),
         ),
       ),
