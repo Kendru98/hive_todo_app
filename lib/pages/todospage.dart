@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_todo_app/api/localnotification_api.dart';
 import 'package:hive_todo_app/pages/detailstodo_page.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
 import 'package:intl/intl.dart';
@@ -12,8 +13,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/dark_theme.dart';
 import '../utils/user_preferences.dart';
-
-//final ThemeHelper = ThemeData();
+import '../api/localnotification_api.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -31,9 +31,24 @@ class _ToDoPageState extends State<ToDoPage> {
 
   @override
   void initState() {
-    initializeDateFormatting();
-    // TODO: implement initState
     super.initState();
+    initializeDateFormatting();
+    NotificationApi.init(initScheduled: true);
+    listenNotifications();
+    _refreshdate();
+  }
+
+  void listenNotifications() => NotificationApi.onNotifications.stream.listen;
+
+  // void onClickedNotification(String? payload) =>
+  //     Navigator.of(context).push(MaterialPageRoute(
+  //       builder: (context) => ToDoPage(),
+  //     ));
+
+  _refreshdate() {
+    setState(() {
+      Boxes.getToDos();
+    });
   }
 
   @override
@@ -43,7 +58,6 @@ class _ToDoPageState extends State<ToDoPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        // backgroundColor: Colors.white, //ThemeProvider.getTheme,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -54,8 +68,6 @@ class _ToDoPageState extends State<ToDoPage> {
             CupertinoSwitch(
                 value: switchstate,
                 onChanged: (bool newValue) {
-                  //ThemeHelper.darktheme = newValue;
-                  //UserSimplePreferences.setDarkTheme(newValue);
                   setState(() {
                     switchstate;
                   });
@@ -68,7 +80,6 @@ class _ToDoPageState extends State<ToDoPage> {
             ),
           ],
         ),
-
         elevation: 0,
       ),
       body: ValueListenableBuilder<Box<ToDo>>(
@@ -80,7 +91,6 @@ class _ToDoPageState extends State<ToDoPage> {
           }),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.white,
-        backgroundColor: Color(0xFF2a3592),
         elevation: 10,
         hoverColor: Colors.green,
         tooltip: 'Dodaj nową listę',
@@ -90,8 +100,6 @@ class _ToDoPageState extends State<ToDoPage> {
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: ((context) => AddEditToDos())));
-
-          //navigation to addtodoeditcreate
         },
       ),
     );
@@ -99,10 +107,10 @@ class _ToDoPageState extends State<ToDoPage> {
 
   Widget buildContent(List<ToDo> todos) {
     if (todos.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'Brak elementów do wyświetlenia!',
-          style: TextStyle(fontSize: 24),
+          style: Theme.of(context).textTheme.headline1,
         ),
       );
     } else {
@@ -132,39 +140,44 @@ class _ToDoPageState extends State<ToDoPage> {
     final date = DateFormat.yMMMd('pl').format(todo.createdDate);
 
     return Card(
-        //  color: Colors.white,
-        child: GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: ((context) => DetailsTodo(
-                      todo: todo,
-                    ))));
-      },
-      child: ListTile(
-        //tilePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        title: Text(todo.name,
-            maxLines: 2, style: Theme.of(context).textTheme.headline1
-            //style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-        //subtitle: Text(date),
-        trailing: Text(date, //todo.createdDate.toIso8601String(),
-            style: Theme.of(context).textTheme.headline1),
-        subtitle: Padding(
-          padding: EdgeInsets.all(15.0),
-          child: new LinearPercentIndicator(
-            width: MediaQuery.of(context).size.width - 200,
-            animation: true,
-            lineHeight: 20.0,
-            animationDuration: 2000,
-            percent: todo.progress / 100,
-            center: Text('${todo.progress.ceil()} %'),
-            barRadius: Radius.circular(20),
-            progressColor: Color(0xFFBB86FC),
+      //  color: Colors.white,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) => DetailsTodo(
+                        todo: todo,
+                      ))));
+        },
+        child: ListTile(
+          title: Text(todo.name,
+              maxLines: 2, style: Theme.of(context).textTheme.headline1),
+          trailing: Text('Utworzony: \n' + date,
+              style: Theme.of(context).textTheme.headline2),
+          subtitle: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: new LinearPercentIndicator(
+                width: MediaQuery.of(context).size.width - 200,
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: 2000,
+                percent: todo.progress / 100,
+                center: Text('${todo.progress.ceil()} %'),
+                barRadius: Radius.circular(20),
+                progressColor: checkprogress(todo.progress) //Color(0xFFBB86FC),
+                ),
           ),
         ),
       ),
-    ));
+    );
+  }
+
+  checkprogress(double progress) {
+    if (progress == 100) {
+      return Color(0xFF86FC86);
+    } else {
+      return Color(0xFFBB86FC);
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_todo_app/model/thingstodo.dart';
+import 'package:hive_todo_app/pages/todocreatepage.dart';
 import 'package:intl/intl.dart';
 
 class DetailsTodo extends StatefulWidget {
@@ -25,7 +26,10 @@ class _DetailsTodoState extends State<DetailsTodo> {
         elevation: 0,
 
         //ikonki kolor
-        actions: [editButton(), deleteButton(widget.todo)],
+        actions: [
+          deleteButton(widget.todo),
+          editButton(widget.todo)
+        ], //editButton(widget.todo)
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -71,10 +75,11 @@ class _DetailsTodoState extends State<DetailsTodo> {
         },
       );
 
-  Widget editButton() => IconButton(
+  Widget editButton(ToDo toDo) => IconButton(
         icon: Icon(Icons.edit_outlined),
         onPressed: () async {
-          // if (isLoading) return;
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddEditToDos(toDo: toDo)));
 
           // await Navigator.of(context).push(MaterialPageRoute(
           //      builder: (context) => AddEditNoteScreen(note: notes)));
