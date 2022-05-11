@@ -86,7 +86,6 @@ class _DetailsTodoState extends State<DetailsTodo> {
       if (element == true) checkedvalues = checkedvalues + 1;
     });
     progress = (checkedvalues / listsize) * 100;
-    print(progress);
     updateProgress(progress, widget.todo);
   }
 

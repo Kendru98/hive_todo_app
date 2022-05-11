@@ -55,6 +55,7 @@ class _AddEditToDosState extends State<AddEditToDos> {
                   size: 28,
                 ),
                 onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   DatePicker.showDateTimePicker(context,
                       theme: DatePickerTheme(),
                       currentTime: DateTime.now(),
@@ -85,7 +86,10 @@ class _AddEditToDosState extends State<AddEditToDos> {
                   if (widget.toDo != null) {
                     EditToDo(widget.toDo!, tasktitle.text,
                         widget.toDo!.thingstodo, widget.toDo!.isChecked);
-
+                    NotificationApi.showScheduledNotification(
+                        title: tasktitle.text,
+                        body: 'Pamiętaj o swoich rzeczach do zrobienia!',
+                        scheduleDate: reminderdate);
                     Navigator.of(context).popUntil((_) => count++ >= 2);
                   } else {
                     AddToDo(tasktitle.text, tasklist);
@@ -181,8 +185,6 @@ class _AddEditToDosState extends State<AddEditToDos> {
     String name,
     List<String> listtodo,
   ) async {
-    print(name);
-    print(listtodo);
     var _isChecked = List<bool>.filled(listtodo.length, false);
     final ToDoData = ToDo()
       ..setreminder = setreminder
@@ -201,10 +203,14 @@ class _AddEditToDosState extends State<AddEditToDos> {
     var listdiff = listtodo.length - isChecked.length;
     var isCheckedfixed = List<bool>.filled(listdiff, false);
     List<bool> newList = new List.from(isChecked)..addAll(isCheckedfixed);
-
+    int checkedvalues = 0;
+    newList.forEach((element) {
+      if (element == true) checkedvalues = checkedvalues + 1;
+    });
     toDo.name = name;
     toDo.thingstodo = listtodo;
     toDo.isChecked = newList; //przedluz liste bool o nowa dlugosc listy todo
+    toDo.progress = (checkedvalues / listtodo.length) * 100; //
     toDo.save();
   }
 
