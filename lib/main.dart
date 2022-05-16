@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_todo_app/bloc/todos_bloc.dart';
 import 'package:hive_todo_app/model/thingstodo.dart';
 import 'package:hive_todo_app/pages/todospage.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 import 'splash_screen.dart';
 import 'package:provider/provider.dart';
+import '/bloc/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +35,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, value, child) {
-      return MaterialApp(
-        theme: value.getTheme(),
-        home: firstrun == false ? const SplashScreen() : const ToDoPage(),
-      );
-    });
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => TodosBloc()..add(LoadTodos()),
+          ),
+        ],
+        child: Consumer<ThemeProvider>(builder: (context, value, child) {
+          return MaterialApp(
+            theme: value.getTheme(),
+            home: firstrun == false ? const SplashScreen() : const ToDoPage(),
+          );
+        }));
   }
 }
