@@ -54,8 +54,8 @@ class _AddEditToDosState extends State<AddEditToDos> {
                   FontAwesomeIcons.bell,
                   size: 28,
                 ),
-                onTap: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
+                onTap: () async {
+                  FocusScope.of(context).unfocus();
                   DatePicker.showDateTimePicker(context,
                       theme: DatePickerTheme(),
                       currentTime: DateTime.now(),
@@ -84,12 +84,13 @@ class _AddEditToDosState extends State<AddEditToDos> {
                 ),
                 onTap: () {
                   if (widget.toDo != null) {
-                    EditToDo(widget.toDo!, tasktitle.text,
-                        widget.toDo!.thingstodo, widget.toDo!.isChecked);
                     NotificationApi.showScheduledNotification(
                         title: tasktitle.text,
                         body: 'Pamiętaj o swoich rzeczach do zrobienia!',
                         scheduleDate: reminderdate);
+                    EditToDo(widget.toDo!, tasktitle.text,
+                        widget.toDo!.thingstodo, widget.toDo!.isChecked);
+
                     Navigator.of(context).popUntil((_) => count++ >= 2);
                   } else {
                     AddToDo(tasktitle.text, tasklist);
