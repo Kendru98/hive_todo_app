@@ -1,36 +1,31 @@
 part of 'todos_bloc.dart';
 
-abstract class TodoEvent extends Equatable {
-  const TodoEvent();
-
-  @override
-  List<Object> get props => [];
+abstract class TodosEvent extends Equatable {
+  const TodosEvent();
 }
 
-class LoadTodos extends TodoEvent {
-  final List<Todo> todos;
-
-  const LoadTodos({
-    this.todos = const <Todo>[],
-  });
+class LoadTodos extends TodosEvent {
+  LoadTodos();
 
   @override
-  List<Object> get props => [todos];
+  List<Object> get props => []; //[todos]
 }
 
-class AddTodo extends TodoEvent {
-  final Todo todo;
+class AddTodo extends TodosEvent {
+  final String todoName;
+  final List<String> tasklist;
 
-  const AddTodo({
-    required this.todo,
-  });
+  const AddTodo(
+    this.todoName,
+    this.tasklist,
+  );
 
   @override
-  List<Object> get props => [todo];
+  List<Object> get props => [todoName, tasklist];
 }
 
-class UpdateTodo extends TodoEvent {
-  final Todo todo;
+class UpdateTodo extends TodosEvent {
+  final ToDo todo;
 
   const UpdateTodo({
     required this.todo,
@@ -40,8 +35,8 @@ class UpdateTodo extends TodoEvent {
   List<Object> get props => [todo];
 }
 
-class DeleteTodo extends TodoEvent {
-  final Todo todo;
+class DeleteTodo extends TodosEvent {
+  final ToDo todo;
 
   const DeleteTodo({
     required this.todo,

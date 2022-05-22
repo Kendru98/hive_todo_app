@@ -24,4 +24,7 @@ class ToDo extends HiveObject {
 
   @HiveField(6)
   late List<bool> isChecked;
+
+  ToDo(this.name, this.createdDate, this.setreminder, this.endDate,
+      this.isChecked, this.progress, this.thingstodo);
 }

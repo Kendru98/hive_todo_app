@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_todo_app/bloc/todos_bloc.dart';
 import 'dart:core';
 import '../api/localnotification_api.dart';
-import '../boxes.dart';
+import '../api/todoservice.dart';
 import '../model/thingstodo.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
@@ -15,12 +17,6 @@ class AddEditToDos extends StatefulWidget {
 
 class _AddEditToDosState extends State<AddEditToDos> {
   @override
-  // void dispose() {
-  //   Hive.close();
-
-  //   super.dispose();
-  // }
-
   final _formKey = GlobalKey<FormState>();
   final listitem = TextEditingController();
   final tasktitle = TextEditingController();
@@ -92,13 +88,18 @@ class _AddEditToDosState extends State<AddEditToDos> {
                         scheduleDate: reminderdate);
                     Navigator.of(context).popUntil((_) => count++ >= 2);
                   } else {
-                    AddToDo(tasktitle.text, tasklist);
-                    if (setreminder == true) {
-                      NotificationApi.showScheduledNotification(
-                          title: tasktitle.text,
-                          body: 'Pamiętaj o swoich rzeczach do zrobienia!',
-                          scheduleDate: reminderdate);
-                    }
+                    // AddToDo(tasktitle.text, tasklist);
+                    // if (setreminder == true) {
+                    //   NotificationApi.showScheduledNotification(
+                    //       title: tasktitle.text,
+                    //       body: 'Pamiętaj o swoich rzeczach do zrobienia!',
+                    //       scheduleDate: reminderdate);
+                    // }
+                    // context
+                    //     .read<TodosBloc>()
+                    //     .add(AddTodo(tasktitle.text, tasklist));
+                    BlocProvider.of<TodosBloc>(context)
+                        .add(AddTodo(tasktitle.text, tasklist));
                     Navigator.pop(context);
                   }
                   //add to hive database
@@ -106,97 +107,109 @@ class _AddEditToDosState extends State<AddEditToDos> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                TextFormField(
-                  style: Theme.of(context).textTheme.headline3,
-                  controller: tasktitle,
-                  decoration: const InputDecoration(
-                    hintText: "Tytuł listy",
+      body: BlocProvider(
+        create: (context) =>
+            TodosBloc(RepositoryProvider.of<TodoService>(context))
+              ..add(LoadTodos()),
+        child: BlocBuilder<TodosBloc, TodosState>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            style: Theme.of(context).textTheme.headline3,
+                            controller: tasktitle,
+                            decoration: const InputDecoration(
+                              hintText: "Tytuł listy",
+                            ),
+                            scrollPadding: const EdgeInsets.all(20.0),
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 1,
+                            autofocus: true,
+                            validator: (value) => value != null && value.isEmpty
+                                ? 'Tytuł nie może być pusty'
+                                : null,
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            focusNode: myFocusNode,
+                            style: Theme.of(context).textTheme.headline3,
+                            onFieldSubmitted: (giventask) {
+                              if (giventask.isEmpty ||
+                                  giventask.trim().length == 0) {
+                                return ValidationAlert();
+                              } else {
+                                setState(() {
+                                  tasklist.add(giventask);
+                                  listitem.clear();
+                                  myFocusNode.requestFocus();
+                                });
+                                //dodaj do listy
+                              }
+                            },
+                            controller: listitem,
+                            decoration: const InputDecoration(
+                              hintText: "Dodaj zadanie do listy",
+                            ),
+                            scrollPadding: const EdgeInsets.all(20.0),
+                            maxLines: 1,
+                            autofocus: true,
+                            validator: (value) => (value != null &&
+                                    value.isEmpty &&
+                                    value.trim().length != 0)
+                                ? 'Nie możesz dodać pustej pozycji'
+                                : null,
+                          ),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: tasklist.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return ListTile(
+                                title: Text(
+                                  tasklist[index],
+                                  style: Theme.of(context).textTheme.headline1,
+                                ),
+                              );
+                            },
+                          ),
+                        ]),
                   ),
-                  scrollPadding: const EdgeInsets.all(20.0),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: 1,
-                  autofocus: true,
-                  validator: (value) => value != null && value.isEmpty
-                      ? 'Tytuł nie może być pusty'
-                      : null,
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                TextFormField(
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  focusNode: myFocusNode,
-                  style: Theme.of(context).textTheme.headline3,
-                  onFieldSubmitted: (giventask) {
-                    if (giventask.isEmpty || giventask.trim().length == 0) {
-                      return ValidationAlert();
-                    } else {
-                      setState(() {
-                        tasklist.add(giventask);
-                        listitem.clear();
-                        myFocusNode.requestFocus();
-                      });
-                      //dodaj do listy
-                    }
-                  },
-                  controller: listitem,
-                  decoration: const InputDecoration(
-                    hintText: "Dodaj zadanie do listy",
-                  ),
-                  scrollPadding: const EdgeInsets.all(20.0),
-                  maxLines: 1,
-                  autofocus: true,
-                  validator: (value) => (value != null &&
-                          value.isEmpty &&
-                          value.trim().length != 0)
-                      ? 'Nie możesz dodać pustej pozycji'
-                      : null,
-                ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: tasklist.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(
-                        tasklist[index],
-                        style: Theme.of(context).textTheme.headline1,
-                      ),
-                    );
-                  },
-                ),
-              ]),
-            ),
-          ],
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  Future AddToDo(
-    String name,
-    List<String> listtodo,
-  ) async {
-    var _isChecked = List<bool>.filled(listtodo.length, false);
-    final ToDoData = ToDo()
-      ..setreminder = setreminder
-      ..endDate = reminderdate
-      ..name = name
-      ..createdDate = DateTime.now()
-      ..thingstodo = listtodo
-      ..progress = 0
-      ..isChecked = _isChecked;
-    final box = Boxes.getToDos();
-    box.add(ToDoData);
-  }
+  // Future AddToDo(
+  //   String name,
+  //   List<String> listtodo,
+  // ) async {
+  //   var _isChecked = List<bool>.filled(listtodo.length, false);
+  //   final ToDoData = ToDo()
+  //     ..setreminder = setreminder
+  //     ..endDate = reminderdate
+  //     ..name = name
+  //     ..createdDate = DateTime.now()
+  //     ..thingstodo = listtodo
+  //     ..progress = 0
+  //     ..isChecked = _isChecked;
+  //   final box = Boxes.getToDos();
+  //   box.add(ToDoData);
+  // }
 
   void EditToDo(
       ToDo toDo, String name, List<String> listtodo, List<bool> isChecked) {

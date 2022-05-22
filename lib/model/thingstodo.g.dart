@@ -16,14 +16,15 @@ class ToDoAdapter extends TypeAdapter<ToDo> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ToDo()
-      ..name = fields[0] as String
-      ..createdDate = fields[1] as DateTime
-      ..setreminder = fields[2] as bool
-      ..endDate = fields[3] as DateTime
-      ..thingstodo = (fields[4] as List).cast<String>()
-      ..progress = fields[5] as double
-      ..isChecked = (fields[6] as List).cast<bool>();
+    return ToDo(
+      fields[0] as String,
+      fields[1] as DateTime,
+      fields[2] as bool,
+      fields[3] as DateTime,
+      (fields[6] as List).cast<bool>(),
+      fields[5] as double,
+      (fields[4] as List).cast<String>(),
+    );
   }
 
   @override
