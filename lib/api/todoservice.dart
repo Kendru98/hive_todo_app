@@ -5,35 +5,32 @@ class TodoService {
   late Box<ToDo> _todos;
 
   Future<void> init() async {
-    Hive.registerAdapter(ToDoAdapter());
+    // Hive.registerAdapter(ToDoAdapter());
     _todos = await Hive.openBox<ToDo>('todos');
   }
 
   List<ToDo> getTodos() {
     final todos = _todos.values;
+    print(todos.toList());
     return todos.toList();
   }
 
-  // void addTodo(String name, List<String> listtodo) {
-  //   // Future AddToDo(
-  //   //   String name,
-  //   //   List<String> listtodo,
-  //   // ) async {
-  //   var _isChecked = List<bool>.filled(listtodo.length, false);
-  //   final ToDoData = ToDo()
-  //     // ..setreminder = setreminder
-  //     // ..endDate = reminderdate
-  //     ..name = name
-  //     ..createdDate = DateTime.now()
-  //     ..thingstodo = listtodo
-  //     ..progress = 0
-  //     ..isChecked = _isChecked;
-  //   // final box = Boxes.getToDos();
-  //   // box.add(ToDoData);
-  //   _todos.add(ToDoData);
-  // }
+  void addTodo(String name, List<String> listtodo) {
+    var _isChecked = List<bool>.filled(listtodo.length, false);
 
-//14:51 poradnik
+    // final box = Boxes.getToDos();
+    // box.add(ToDoData);
+    _todos.add(ToDo(
+      name,
+      DateTime.now(),
+      true, //pointless
+      DateTime.now(), //pointless
+      _isChecked,
+      0,
+      listtodo,
+    ));
+  }
+
   Future<void> removeTodo(final ToDo todo) async {
     await todo.delete();
   }

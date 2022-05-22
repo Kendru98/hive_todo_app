@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 
 part 'thingstodo.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 2)
 class ToDo extends HiveObject {
   @HiveField(0)
   late String name;

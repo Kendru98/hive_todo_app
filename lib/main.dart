@@ -5,6 +5,7 @@ import 'package:hive_todo_app/api/todoservice.dart';
 import 'package:hive_todo_app/pages/todospage.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
+import 'model/thingstodo.dart';
 import 'splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-  // Hive.registerAdapter(ToDoAdapter());
+  Hive.registerAdapter(ToDoAdapter());
   // await Hive.openBox<ToDo>('todos');
 
   await UserSimplePreferences.init().then((preferences) {

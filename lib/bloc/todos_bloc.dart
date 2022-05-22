@@ -26,9 +26,10 @@ class TodosBloc extends Bloc<TodosEvent, TodosState> {
   }
 
   FutureOr<void> _onAddTodo(AddTodo event, Emitter<TodosState> emit) {
-    // final currentState = state as TodosLoaded;
-    // _todoService.addTodo(event.todoName, event.tasklist);
-    // //add(LoadTodosEvent(currentState.username));
+    final currentState = state as TodosLoaded;
+    _todoService.addTodo(event.todoName, event.tasklist);
+    // add(LoadTodosEvent(currentState.username));
+    add(LoadTodos());
   }
 }
 

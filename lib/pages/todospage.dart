@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/api/localnotification_api.dart';
 import 'package:hive_todo_app/api/todoservice.dart';
 import 'package:hive_todo_app/bloc/blocs.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:intl/intl.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,6 +14,7 @@ import '../model/thingstodo.dart';
 import '../utils/dark_theme.dart';
 import '../utils/user_preferences.dart';
 import '../api/localnotification_api.dart';
+import 'detailstodo_page.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -22,11 +24,10 @@ class ToDoPage extends StatefulWidget {
 }
 
 class _ToDoPageState extends State<ToDoPage> {
-  @override
-  void dispose() {
-    Hive.box('todos').close();
-    super.dispose(); //7:45
-  }
+  // void dispose() {
+  //   Hive.box('todos').close();
+  //   super.dispose(); //7:45
+  // }
 
   @override
   void initState() {
@@ -120,35 +121,35 @@ class _ToDoPageState extends State<ToDoPage> {
     BuildContext context,
     ToDo todo,
   ) {
-    //final date = DateFormat.yMMMd('pl').format(todo.createdDate);
+    final date = DateFormat.yMMMd('pl').format(todo.createdDate);
 
     return Card(
       child: GestureDetector(
         onTap: () {
-          // Navigator.push(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: ((context) => DetailsTodo(
-          //               todo: todo,
-          //             ))));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) => DetailsTodo(
+                        todo: todo,
+                      ))));
         },
         child: ListTile(
           title: Text(todo.name,
               maxLines: 2, style: Theme.of(context).textTheme.headline1),
-          // trailing: Text('Utworzony: \n' + date,
-          //     style: Theme.of(context).textTheme.headline2),
-          // subtitle: Padding(
-          //   padding: EdgeInsets.all(15.0),
-          //   // child: new LinearPercentIndicator(
-          //   //     width: MediaQuery.of(context).size.width - 200,
-          //   //     animation: true,
-          //   //     lineHeight: 20.0,
-          //   //     animationDuration: 2000,
-          //   //     percent: todo.progress / 100,
-          //   //     center: Text('${todo.progress.ceil()} %'),
-          //   //     barRadius: Radius.circular(20),
-          //   //     progressColor: checkprogress(todo.progress)),
-          // ),
+          trailing: Text('Utworzony: \n' + date,
+              style: Theme.of(context).textTheme.headline2),
+          subtitle: Padding(
+            padding: EdgeInsets.all(15.0),
+            child: new LinearPercentIndicator(
+                width: MediaQuery.of(context).size.width - 200,
+                animation: true,
+                lineHeight: 20.0,
+                animationDuration: 2000,
+                percent: todo.progress / 100,
+                center: Text('${todo.progress.ceil()} %'),
+                barRadius: Radius.circular(20),
+                progressColor: checkprogress(todo.progress)),
+          ),
         ),
       ),
     );
