@@ -140,7 +140,7 @@ class _ToDoPageState extends State<ToDoPage> {
                 lineHeight: 20.0,
                 animationDuration: 2000,
                 percent: todo.progress / 100,
-                center: Text('${todo.progress.ceil()} %'),
+                center: Text('${todo.progress.toStringAsFixed(1)} %'),
                 barRadius: Radius.circular(20),
                 progressColor: checkprogress(todo.progress)),
           ),
