@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_todo_app/api/localnotification_api.dart';
-import 'package:hive_todo_app/api/todoservice.dart';
 import 'package:hive_todo_app/bloc/blocs.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
 import 'package:intl/intl.dart';
@@ -70,37 +69,32 @@ class _ToDoPageState extends State<ToDoPage> {
         ),
         elevation: 0,
       ),
-      body: BlocProvider(
-        create: (context) =>
-            TodosBloc(RepositoryProvider.of<TodoService>(context))
-              ..add(LoadTodos()),
-        child: BlocBuilder<TodosBloc, TodosState>(builder: (context, state) {
-          if (state is TodosLoading) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is TodosLoaded) {
-            return Column(
-              children: [
-                const SizedBox(height: 24),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(8),
-                    itemCount: state.todos.length, //todos.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      //final todo = todos[index];
+      body: BlocBuilder<TodosBloc, TodosState>(builder: (context, state) {
+        if (state is TodosLoading) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is TodosLoaded) {
+          return Column(
+            children: [
+              const SizedBox(height: 24),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: state.todos.length, //todos.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    //final todo = todos[index];
 
-                      return buildList(context, state.todos[index]);
-                    },
-                  ),
+                    return buildList(context, state.todos[index]);
+                  },
                 ),
-              ],
-            );
-          }
-          return Text('Something goes wrong');
-        }),
-      ),
+              ),
+            ],
+          );
+        }
+        return Text('Something goes wrong');
+      }),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.white,
         elevation: 10,
@@ -110,8 +104,8 @@ class _ToDoPageState extends State<ToDoPage> {
           FontAwesomeIcons.plus,
         ),
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: ((context) => AddEditToDos())));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => AddEditToDos()));
         },
       ),
     );

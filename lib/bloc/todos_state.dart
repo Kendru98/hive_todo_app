@@ -13,9 +13,6 @@ class TodosLoaded extends TodosState {
   final List<ToDo> todos;
 
   TodosLoaded(this.todos);
-  // const TodosLoaded({
-  //   this.todos = const <ToDo>[],
-  // });
 
   @override
   List<Object?> get props => [todos];

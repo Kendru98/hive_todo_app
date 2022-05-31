@@ -5,6 +5,7 @@ import 'package:hive_todo_app/api/todoservice.dart';
 import 'package:hive_todo_app/pages/todospage.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
+import 'bloc/todos_bloc.dart';
 import 'model/thingstodo.dart';
 import 'splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -37,9 +38,14 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(builder: (context, value, child) {
       return RepositoryProvider(
         create: (context) => TodoService(), // -- init
-        child: MaterialApp(
-          theme: value.getTheme(),
-          home: firstrun == false ? const SplashScreen() : const ToDoPage(),
+        child: BlocProvider(
+          create: (context) =>
+              TodosBloc(RepositoryProvider.of<TodoService>(context))
+                ..add(LoadTodos()),
+          child: MaterialApp(
+            theme: value.getTheme(),
+            home: firstrun == false ? const SplashScreen() : const ToDoPage(),
+          ),
         ),
       );
     });

@@ -11,6 +11,16 @@ class LoadTodos extends TodosEvent {
   List<Object> get props => []; //[todos]
 }
 
+class UpdateProgress extends TodosEvent {
+  final double progress;
+  final ToDo toDo;
+
+  UpdateProgress(this.progress, this.toDo);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [progress, toDo];
+}
+
 class AddTodo extends TodosEvent {
   final String todoName;
   final List<String> tasklist;

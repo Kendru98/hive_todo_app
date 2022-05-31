@@ -9,6 +9,13 @@ class TodoService {
     _todos = await Hive.openBox<ToDo>('todos');
   }
 
+  Future<void> updateProgress(double progress, ToDo toDo) async {
+    toDo.progress = progress;
+
+    await _todos.put(toDo.key, toDo);
+    //toDo.save();
+  }
+
   List<ToDo> getTodos() {
     final todos = _todos.values;
     print(todos.toList());
