@@ -4,16 +4,14 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/api/localnotification_api.dart';
 import 'package:hive_todo_app/pages/detailstodo_page.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../boxes.dart';
-import '../model/thingstodo.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/dark_theme.dart';
 import '../utils/user_preferences.dart';
-import '../api/localnotification_api.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -35,16 +33,9 @@ class _ToDoPageState extends State<ToDoPage> {
     initializeDateFormatting();
     NotificationApi.init(initScheduled: true);
     listenNotifications();
-    _refreshdate();
   }
 
   void listenNotifications() => NotificationApi.onNotifications.stream.listen;
-
-  _refreshdate() {
-    setState(() {
-      Boxes.getToDos();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,13 +68,46 @@ class _ToDoPageState extends State<ToDoPage> {
         ),
         elevation: 0,
       ),
-      body: ValueListenableBuilder<Box<ToDo>>(
-          valueListenable: Boxes.getToDos().listenable(),
-          builder: (context, box, _) {
-            final todos = box.values.toList().cast<ToDo>();
-
-            return buildContent(todos);
-          }),
+      body: Consumer<TodoListController>(
+        builder: (context, provider, child) {
+          return ListView.builder(
+              itemCount: provider.todolist.length,
+              itemBuilder: ((context, index) => Card(
+                    child: ListTile(
+                      title: Text(provider.todolist[index].name,
+                          maxLines: 2,
+                          style: Theme.of(context).textTheme.headline1),
+                      trailing: Text(
+                          'Utworzony: \n' +
+                              DateFormat.yMMMd('pl')
+                                  .format(provider.todolist[index].createdDate),
+                          style: Theme.of(context).textTheme.headline2),
+                      subtitle: Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: new LinearPercentIndicator(
+                            width: MediaQuery.of(context).size.width - 200,
+                            animation: true,
+                            lineHeight: 20.0,
+                            animationDuration: 2000,
+                            percent: provider.todolist[index].progress / 100,
+                            center: Text(
+                                '${provider.todolist[index].progress.toStringAsFixed(1)} %'),
+                            barRadius: Radius.circular(20),
+                            progressColor: checkprogress(
+                                provider.todolist[index].progress)),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => DetailsTodo(
+                                      todo: provider.todolist[index],
+                                    ))));
+                      },
+                    ),
+                  )));
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.white,
         elevation: 10,
@@ -96,72 +120,6 @@ class _ToDoPageState extends State<ToDoPage> {
           Navigator.push(context,
               MaterialPageRoute(builder: ((context) => AddEditToDos())));
         },
-      ),
-    );
-  }
-
-  Widget buildContent(List<ToDo> todos) {
-    if (todos.isEmpty) {
-      return Center(
-        child: Text(
-          'Brak elementów do wyświetlenia!',
-          style: Theme.of(context).textTheme.headline1,
-        ),
-      );
-    } else {
-      return Column(
-        children: [
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(8),
-              itemCount: todos.length,
-              itemBuilder: (BuildContext context, int index) {
-                final todo = todos[index];
-
-                return buildList(context, todo);
-              },
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
-  Widget buildList(
-    BuildContext context,
-    ToDo todo,
-  ) {
-    final date = DateFormat.yMMMd('pl').format(todo.createdDate);
-
-    return Card(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: ((context) => DetailsTodo(
-                        todo: todo,
-                      ))));
-        },
-        child: ListTile(
-          title: Text(todo.name,
-              maxLines: 2, style: Theme.of(context).textTheme.headline1),
-          trailing: Text('Utworzony: \n' + date,
-              style: Theme.of(context).textTheme.headline2),
-          subtitle: Padding(
-            padding: EdgeInsets.all(15.0),
-            child: new LinearPercentIndicator(
-                width: MediaQuery.of(context).size.width - 200,
-                animation: true,
-                lineHeight: 20.0,
-                animationDuration: 2000,
-                percent: todo.progress / 100,
-                center: Text('${todo.progress.toStringAsFixed(1)} %'),
-                barRadius: Radius.circular(20),
-                progressColor: checkprogress(todo.progress)),
-          ),
-        ),
       ),
     );
   }

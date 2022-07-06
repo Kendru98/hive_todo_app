@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/model/thingstodo.dart';
 import 'package:hive_todo_app/pages/todospage.dart';
+import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 import 'splash_screen.dart';
@@ -32,11 +33,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(builder: (context, value, child) {
-      return MaterialApp(
-        theme: value.getTheme(),
-        home: firstrun == false ? const SplashScreen() : const ToDoPage(),
-      );
-    });
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => TodoListController(),
+          )
+        ],
+        child: Consumer<ThemeProvider>(builder: (context, value, child) {
+          return MaterialApp(
+            theme: value.getTheme(),
+            home: firstrun == false ? const SplashScreen() : const ToDoPage(),
+          );
+        }));
   }
 }

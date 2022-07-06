@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_todo_app/model/thingstodo.dart';
 import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class DetailsTodo extends StatefulWidget {
   const DetailsTodo({required ToDo this.todo});
@@ -19,12 +21,29 @@ class _DetailsTodoState extends State<DetailsTodo> {
   }
 
   Widget build(BuildContext context) {
+    final provider = Provider.of<TodoListController>(context, listen: false);
     @override
     final date = DateFormat.yMMMd('pl').format(widget.todo.createdDate);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        actions: [deleteButton(widget.todo), editButton(widget.todo)],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () async {
+              await provider.deletetodo(widget.todo);
+
+              Navigator.pop(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.edit_outlined),
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => AddEditToDos(toDo: widget.todo)));
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -48,7 +67,9 @@ class _DetailsTodoState extends State<DetailsTodo> {
                     onChanged: (value) {
                       setState(() {
                         widget.todo.isChecked[index] = value!;
-                        countProgress(widget.todo.isChecked);
+
+                        provider.countProgress(
+                            widget.todo.isChecked, widget.todo);
                       });
                     });
               },
@@ -57,41 +78,5 @@ class _DetailsTodoState extends State<DetailsTodo> {
         ),
       ),
     );
-  }
-
-  Widget deleteButton(ToDo todo) => IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () async {
-          await todo.delete();
-          Navigator.pop(context);
-        },
-      );
-
-  Widget editButton(ToDo toDo) => IconButton(
-        icon: Icon(Icons.edit_outlined),
-        onPressed: () async {
-          await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddEditToDos(toDo: toDo)));
-        },
-      );
-
-  countProgress(
-    List<bool> CheckedList,
-  ) {
-    double progress;
-    int checkedvalues = 0;
-    int listsize = CheckedList.length;
-
-    CheckedList.forEach((element) {
-      if (element == true) checkedvalues = checkedvalues + 1;
-    });
-    progress = (checkedvalues / listsize) * 100;
-    updateProgress(progress, widget.todo);
-  }
-
-  updateProgress(double progress, ToDo toDo) {
-    toDo.progress = progress;
-
-    toDo.save();
   }
 }

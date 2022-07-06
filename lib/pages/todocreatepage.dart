@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:core';
 import '../api/localnotification_api.dart';
 import '../boxes.dart';
 import '../model/thingstodo.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+
+import '../providers/todo_provider.dart';
 
 class AddEditToDos extends StatefulWidget {
   final ToDo? toDo;
@@ -14,13 +17,6 @@ class AddEditToDos extends StatefulWidget {
 }
 
 class _AddEditToDosState extends State<AddEditToDos> {
-  @override
-  // void dispose() {
-  //   Hive.close();
-
-  //   super.dispose();
-  // }
-
   final _formKey = GlobalKey<FormState>();
   final listitem = TextEditingController();
   final tasktitle = TextEditingController();
@@ -30,15 +26,13 @@ class _AddEditToDosState extends State<AddEditToDos> {
 
   var count = 0;
   @override
-  Widget build(
-    BuildContext context,
-  ) {
-    // ToDo toDo
+  Widget build(BuildContext context) {
     if (widget.toDo != null) {
       tasktitle.text = widget.toDo!.name;
       tasklist = widget.toDo!.thingstodo;
     }
     FocusNode myFocusNode = FocusNode();
+    final provider = Provider.of<TodoListController>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -88,12 +82,14 @@ class _AddEditToDosState extends State<AddEditToDos> {
                         title: tasktitle.text,
                         body: 'Pamiętaj o swoich rzeczach do zrobienia!',
                         scheduleDate: reminderdate);
-                    EditToDo(widget.toDo!, tasktitle.text,
+                    provider.editToDo(widget.toDo!, tasktitle.text,
                         widget.toDo!.thingstodo, widget.toDo!.isChecked);
 
                     Navigator.of(context).popUntil((_) => count++ >= 2);
                   } else {
-                    AddToDo(tasktitle.text, tasklist);
+                    // AddToDo(tasktitle.text, tasklist);
+                    provider.addtodo(
+                        tasktitle.text, tasklist, setreminder, reminderdate);
                     if (setreminder == true) {
                       NotificationApi.showScheduledNotification(
                           title: tasktitle.text,
@@ -180,39 +176,6 @@ class _AddEditToDosState extends State<AddEditToDos> {
         ),
       ),
     );
-  }
-
-  Future AddToDo(
-    String name,
-    List<String> listtodo,
-  ) async {
-    var _isChecked = List<bool>.filled(listtodo.length, false);
-    final ToDoData = ToDo()
-      ..setreminder = setreminder
-      ..endDate = reminderdate
-      ..name = name
-      ..createdDate = DateTime.now()
-      ..thingstodo = listtodo
-      ..progress = 0
-      ..isChecked = _isChecked;
-    final box = Boxes.getToDos();
-    box.add(ToDoData);
-  }
-
-  void EditToDo(
-      ToDo toDo, String name, List<String> listtodo, List<bool> isChecked) {
-    var listdiff = listtodo.length - isChecked.length;
-    var isCheckedfixed = List<bool>.filled(listdiff, false);
-    List<bool> newList = new List.from(isChecked)..addAll(isCheckedfixed);
-    int checkedvalues = 0;
-    newList.forEach((element) {
-      if (element == true) checkedvalues = checkedvalues + 1;
-    });
-    toDo.name = name;
-    toDo.thingstodo = listtodo;
-    toDo.isChecked = newList; //przedluz liste bool o nowa dlugosc listy todo
-    toDo.progress = (checkedvalues / listtodo.length) * 100; //
-    toDo.save();
   }
 
   void ValidationAlert() {
