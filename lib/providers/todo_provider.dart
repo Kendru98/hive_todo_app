@@ -6,7 +6,8 @@ import '../model/thingstodo.dart';
 class TodoListController extends ChangeNotifier {
   List<ToDo> _todolist = [];
   List<ToDo> get todolist => _todolist;
-
+  //  static Box<ToDo> getToDos() => Hive.box<ToDo>('todos');
+  //var box = Hive.box<ToDo>('todos');
   var Box = Boxes.getToDos();
   TodoListController() {
     _fetchTodos();
@@ -62,8 +63,12 @@ class TodoListController extends ChangeNotifier {
     _fetchTodos();
   }
 
-  editToDo(
-      ToDo toDo, String name, List<String> listtodo, List<bool> isChecked) {
+  void editToDo(
+    ToDo toDo,
+    String name,
+    List<String> listtodo,
+    List<bool> isChecked,
+  ) {
     var listdiff = listtodo.length - isChecked.length;
     var isCheckedfixed = List<bool>.filled(listdiff, false);
     List<bool> newList = new List.from(isChecked)..addAll(isCheckedfixed);
