@@ -13,14 +13,14 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ToDoPage extends StatefulWidget {
-  const ToDoPage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<ToDoPage> createState() => _ToDoPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _ToDoPageState extends State<ToDoPage> {
+class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     Hive.box('todos').close();
@@ -36,6 +36,14 @@ class _ToDoPageState extends State<ToDoPage> {
   }
 
   void listenNotifications() => NotificationApi.onNotifications.stream.listen;
+
+  Color checkProgress(double progress) {
+    if (progress == 100) {
+      return Color(0xFF86FC86);
+    } else {
+      return Color(0xFFBB86FC);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,13 +138,5 @@ class _ToDoPageState extends State<ToDoPage> {
         },
       ),
     );
-  }
-
-  Color checkProgress(double progress) {
-    if (progress == 100) {
-      return Color(0xFF86FC86);
-    } else {
-      return Color(0xFFBB86FC);
-    }
   }
 }

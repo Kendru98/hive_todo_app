@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'to_do.dart';
+part of 'todo.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 
-import 'pages/todospage.dart';
+import 'pages/homepage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -63,12 +63,14 @@ class _SplashScreenState extends State<SplashScreen> {
                   onPressed: () {
                     UserSimplePreferences.setFirstRun(true);
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => const ToDoPage())));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
                   },
                   child: Text(
-                    'Zaczynamy!', //shared preferences
+                    'Zaczynamy!',
                     style: GoogleFonts.lato(
                       textStyle: const TextStyle(
                         fontSize: 24,

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:hive_todo_app/pages/todospage.dart';
+import 'package:hive_todo_app/pages/homepage.dart';
 import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 
-import 'model/to_do.dart';
+import 'model/todo.dart';
 import 'splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         builder: (context, value, child) {
           return MaterialApp(
             theme: value.getTheme(),
-            home: firstrun ? const ToDoPage() : const SplashScreen(),
+            home: firstrun ? const HomePage() : const SplashScreen(),
           );
         },
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hive_todo_app/boxes.dart';
-import 'package:hive_todo_app/model/to_do.dart';
+import 'package:hive_todo_app/model/todo.dart';
 
 class TodoListController extends ChangeNotifier {
   List<ToDo> _toDoList = [];

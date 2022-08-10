@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_todo_app/model/to_do.dart';
+import 'package:hive_todo_app/model/todo.dart';
 import 'package:hive_todo_app/pages/add_edit_todo.dart';
 import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:intl/intl.dart';
