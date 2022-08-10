@@ -9,10 +9,14 @@ class NotificationApi {
   static final onNotifications = BehaviorSubject<String?>();
   static Future _notificationDetails() async {
     return NotificationDetails(
-        android: AndroidNotificationDetails('channel id', 'channel name',
-            channelDescription: 'channel description',
-            importance: Importance.max),
-        iOS: IOSNotificationDetails());
+      android: AndroidNotificationDetails(
+        'channel id',
+        'channel name',
+        channelDescription: 'channel description',
+        importance: Importance.max,
+      ),
+      iOS: IOSNotificationDetails(),
+    );
   }
 
   static Future showNotification({
@@ -47,7 +51,6 @@ class NotificationApi {
     }
   }
 
-//Czasowe powiadomienie
   static Future showScheduledNotification({
     int id = 0,
     String? title,
@@ -59,7 +62,7 @@ class NotificationApi {
         id,
         title,
         body,
-        tz.TZDateTime.from(scheduleDate, tz.local), //_scheduleDate(date),
+        tz.TZDateTime.from(scheduleDate, tz.local),
         await _notificationDetails(),
         payload: payload,
         androidAllowWhileIdle: true,
@@ -67,7 +70,4 @@ class NotificationApi {
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dateAndTime,
       );
-
-  //static tz.TZDateTime _scheduleDate({date, days}) {}
-
 }

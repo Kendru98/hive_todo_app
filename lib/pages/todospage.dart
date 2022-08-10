@@ -2,16 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_todo_app/api/localnotification_api.dart';
-import 'package:hive_todo_app/pages/detailstodo_page.dart';
-import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:hive_todo_app/pages/details_todo.dart';
+import 'package:hive_todo_app/pages/add_edit_todo.dart';
 import 'package:hive_todo_app/providers/todo_provider.dart';
+import 'package:hive_todo_app/utils/dark_theme.dart';
+import 'package:hive_todo_app/utils/user_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../utils/dark_theme.dart';
-import '../utils/user_preferences.dart';
 
 class ToDoPage extends StatefulWidget {
   const ToDoPage({Key? key}) : super(key: key);
@@ -24,7 +24,7 @@ class _ToDoPageState extends State<ToDoPage> {
   @override
   void dispose() {
     Hive.box('todos').close();
-    super.dispose(); //7:45
+    super.dispose();
   }
 
   @override
@@ -52,14 +52,16 @@ class _ToDoPageState extends State<ToDoPage> {
               color: Colors.yellowAccent,
             ),
             CupertinoSwitch(
-                value: switchstate,
-                onChanged: (bool newValue) {
-                  setState(() {
-                    switchstate;
-                  });
-                  Provider.of<ThemeProvider>(context, listen: false)
-                      .swapTheme();
-                }),
+              value: switchstate,
+              onChanged: (bool newValue) {
+                setState(() {
+                  switchstate;
+                });
+
+                final provider = context.read()<ThemeProvider>();
+                provider.swapTheme();
+              },
+            ),
             Icon(
               FontAwesomeIcons.moon,
               color: Colors.grey,
@@ -71,41 +73,43 @@ class _ToDoPageState extends State<ToDoPage> {
       body: Consumer<TodoListController>(
         builder: (context, provider, child) {
           return ListView.builder(
-              itemCount: provider.todolist.length,
-              itemBuilder: ((context, index) => Card(
-                    child: ListTile(
-                      title: Text(provider.todolist[index].name,
-                          maxLines: 2,
-                          style: Theme.of(context).textTheme.headline1),
-                      trailing: Text(
-                          'Utworzony: \n' +
-                              DateFormat.yMMMd('pl')
-                                  .format(provider.todolist[index].createdDate),
-                          style: Theme.of(context).textTheme.headline2),
-                      subtitle: Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: new LinearPercentIndicator(
-                            width: MediaQuery.of(context).size.width - 200,
-                            animation: true,
-                            lineHeight: 20.0,
-                            animationDuration: 2000,
-                            percent: provider.todolist[index].progress / 100,
-                            center: Text(
-                                '${provider.todolist[index].progress.toStringAsFixed(1)} %'),
-                            barRadius: Radius.circular(20),
-                            progressColor: checkprogress(
-                                provider.todolist[index].progress)),
+            itemCount: provider.toDoList.length,
+            itemBuilder: (context, index) => Card(
+              child: ListTile(
+                title: Text(provider.toDoList[index].name,
+                    maxLines: 2, style: Theme.of(context).textTheme.headline1),
+                trailing: Text(
+                    'Utworzony: \n' +
+                        DateFormat.yMMMd('pl')
+                            .format(provider.toDoList[index].createdDate),
+                    style: Theme.of(context).textTheme.headline2),
+                subtitle: Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: new LinearPercentIndicator(
+                      width: MediaQuery.of(context).size.width - 200,
+                      animation: true,
+                      lineHeight: 20.0,
+                      animationDuration: 2000,
+                      percent: provider.toDoList[index].progress / 100,
+                      center: Text(
+                          '${provider.toDoList[index].progress.toStringAsFixed(1)} %'),
+                      barRadius: Radius.circular(20),
+                      progressColor:
+                          checkProgress(provider.toDoList[index].progress)),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailsTodo(
+                        todo: provider.toDoList[index],
                       ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: ((context) => DetailsTodo(
-                                      todo: provider.todolist[index],
-                                    ))));
-                      },
                     ),
-                  )));
+                  );
+                },
+              ),
+            ),
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -117,14 +121,18 @@ class _ToDoPageState extends State<ToDoPage> {
           FontAwesomeIcons.plus,
         ),
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: ((context) => AddEditToDos())));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddEditTodo(),
+            ),
+          );
         },
       ),
     );
   }
 
-  checkprogress(double progress) {
+  Color checkProgress(double progress) {
     if (progress == 100) {
       return Color(0xFF86FC86);
     } else {

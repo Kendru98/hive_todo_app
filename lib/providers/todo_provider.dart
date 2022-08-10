@@ -1,56 +1,54 @@
 import 'package:flutter/cupertino.dart';
-
-import '../boxes.dart';
-import '../model/thingstodo.dart';
+import 'package:hive_todo_app/boxes.dart';
+import 'package:hive_todo_app/model/to_do.dart';
 
 class TodoListController extends ChangeNotifier {
-  List<ToDo> _todolist = [];
-  List<ToDo> get todolist => _todolist;
-  //  static Box<ToDo> getToDos() => Hive.box<ToDo>('todos');
-  //var box = Hive.box<ToDo>('todos');
-  var Box = Boxes.getToDos();
+  List<ToDo> _toDoList = [];
+  List<ToDo> get toDoList => _toDoList;
+
+  var box = Boxes.getToDos();
   TodoListController() {
     _fetchTodos();
     notifyListeners();
   }
 
   void _fetchTodos() {
-    _todolist = Box.values.toList().cast<ToDo>();
+    _toDoList = box.values.toList().cast<ToDo>();
     notifyListeners();
   }
 
-  countProgress(List<bool> CheckedList, ToDo toDo) {
+  void countProgress(List<bool> checkedList, ToDo toDo) {
     double progress;
     int checkedvalues = 0;
-    int listsize = CheckedList.length;
+    int listsize = checkedList.length;
 
-    CheckedList.forEach((element) {
-      if (element == true) checkedvalues = checkedvalues + 1;
+    checkedList.forEach((element) {
+      if (element) checkedvalues = checkedvalues + 1;
     });
     progress = (checkedvalues / listsize) * 100;
     updateProgress(progress, toDo);
   }
 
-  updateProgress(double progress, ToDo toDo) {
+  Future<void> updateProgress(double progress, ToDo toDo) async {
     toDo.progress = progress;
 
-    toDo.save();
+    await toDo.save();
     notifyListeners();
   }
 
-  deletetodo(ToDo todo) {
-    todo.delete();
+  Future<void> deleteTodo(ToDo todo) async {
+    await todo.delete();
     _fetchTodos();
   }
 
-  addtodo(
+  Future<void> addTodo(
     String name,
     List<String> listtodo,
     bool reminderset,
     DateTime reminder,
-  ) {
-    var _isChecked = List<bool>.filled(listtodo.length, false);
-    final ToDoData = ToDo()
+  ) async {
+    List<bool> _isChecked = List<bool>.filled(listtodo.length, false);
+    final ToDo toDoData = ToDo()
       ..setreminder = reminderset
       ..endDate = reminder
       ..name = name
@@ -59,27 +57,29 @@ class TodoListController extends ChangeNotifier {
       ..progress = 0
       ..isChecked = _isChecked;
 
-    Box.add(ToDoData);
+    await box.add(toDoData);
     _fetchTodos();
   }
 
-  void editToDo(
+  Future<void> editToDo(
     ToDo toDo,
     String name,
     List<String> listtodo,
     List<bool> isChecked,
-  ) {
+  ) async {
     var listdiff = listtodo.length - isChecked.length;
     var isCheckedfixed = List<bool>.filled(listdiff, false);
     List<bool> newList = new List.from(isChecked)..addAll(isCheckedfixed);
     int checkedvalues = 0;
-    newList.forEach((element) {
-      if (element == true) checkedvalues = checkedvalues + 1;
-    });
+    newList.forEach(
+      (element) {
+        if (element) checkedvalues = checkedvalues + 1;
+      },
+    );
     toDo.name = name;
     toDo.thingstodo = listtodo;
     toDo.isChecked = newList; //przedluz liste bool o nowa dlugosc listy todo
     toDo.progress = (checkedvalues / listtodo.length) * 100; //
-    toDo.save();
+    await toDo.save();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive_todo_app/model/thingstodo.dart';
-import 'package:hive_todo_app/pages/todocreatepage.dart';
+import 'package:hive_todo_app/model/to_do.dart';
+import 'package:hive_todo_app/pages/add_edit_todo.dart';
 import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +21,7 @@ class _DetailsTodoState extends State<DetailsTodo> {
   }
 
   Widget build(BuildContext context) {
-    final provider = Provider.of<TodoListController>(context, listen: false);
+    final provider = context.read<TodoListController>();
     @override
     final date = DateFormat.yMMMd('pl').format(widget.todo.createdDate);
     return Scaffold(
@@ -31,7 +31,7 @@ class _DetailsTodoState extends State<DetailsTodo> {
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () async {
-              await provider.deletetodo(widget.todo);
+              await provider.deleteTodo(widget.todo);
 
               Navigator.pop(context);
             },
@@ -39,8 +39,11 @@ class _DetailsTodoState extends State<DetailsTodo> {
           IconButton(
             icon: Icon(Icons.edit_outlined),
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => AddEditToDos(toDo: widget.todo)));
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => AddEditTodo(toDo: widget.todo),
+                ),
+              );
             },
           ),
         ],
@@ -60,18 +63,20 @@ class _DetailsTodoState extends State<DetailsTodo> {
               itemCount: widget.todo.thingstodo.length,
               itemBuilder: (BuildContext context, int index) {
                 return CheckboxListTile(
-                    controlAffinity: ListTileControlAffinity.leading,
-                    title: Text(widget.todo.thingstodo[index],
-                        style: Theme.of(context).textTheme.headline1),
-                    value: widget.todo.isChecked[index],
-                    onChanged: (value) {
-                      setState(() {
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(widget.todo.thingstodo[index],
+                      style: Theme.of(context).textTheme.headline1),
+                  value: widget.todo.isChecked[index],
+                  onChanged: (value) {
+                    setState(
+                      () {
                         widget.todo.isChecked[index] = value!;
-
                         provider.countProgress(
                             widget.todo.isChecked, widget.todo);
-                      });
-                    });
+                      },
+                    );
+                  },
+                );
               },
             )
           ],
