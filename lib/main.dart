@@ -7,7 +7,7 @@ import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:hive_todo_app/utils/dark_theme.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
 
-import 'model/thingstodo.dart';
+import 'model/to_do.dart';
 import 'splash_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ Future<void> main() async {
 
   await UserSimplePreferences.init().then(
     (preferences) {
-      var isDarkTheme = UserSimplePreferences.getDarkTheme() ?? false;
+      bool isDarkTheme = UserSimplePreferences.getDarkTheme() ?? false;
       return runApp(
         ChangeNotifierProvider<ThemeProvider>(
           child: MyApp(),
@@ -34,21 +34,23 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  bool firstrun = UserSimplePreferences.getFirstRun() ?? false;
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    bool firstrun = UserSimplePreferences.getFirstRun() ?? false;
     return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => TodoListController(),
-          )
-        ],
-        child: Consumer<ThemeProvider>(builder: (context, value, child) {
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => TodoListController(),
+        )
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, value, child) {
           return MaterialApp(
             theme: value.getTheme(),
-            home: firstrun == false ? const SplashScreen() : const ToDoPage(),
+            home: firstrun ? const ToDoPage() : const SplashScreen(),
           );
-        }));
+        },
+      ),
+    );
   }
 }
