@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_todo_app/api/localnotification_api.dart';
-import 'package:hive_todo_app/model/to_do.dart';
+import 'package:hive_todo_app/model/todo.dart';
 import 'package:hive_todo_app/providers/todo_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,36 +15,30 @@ class AddEditTodo extends StatefulWidget {
 
 class _AddEditTodoState extends State<AddEditTodo> {
   final _formKey = GlobalKey<FormState>();
-  final listitem = TextEditingController();
-  final tasktitle = TextEditingController();
-  var reminderdate = DateTime.now();
-  var setreminder = false;
-  List<String> tasklist = [];
+  final listItem = TextEditingController();
+  final taskTitle = TextEditingController();
+  DateTime reminderDate = DateTime.now();
+  bool setReminder = false;
+  List<String> taskList = [];
 
   var count = 0;
   @override
   Widget build(BuildContext context) {
     if (widget.toDo != null) {
-      tasktitle.text = widget.toDo!.name;
-      tasklist = widget.toDo!.thingstodo;
+      taskTitle.text = widget.toDo!.name;
+      taskList = widget.toDo!.thingstodo;
     }
     FocusNode myFocusNode = FocusNode();
-    final provider = context.read<
-        TodoListController>(); //Provider.of<TodoListController>(context, listen: false);
+    final provider = context.read<TodoListController>();
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        iconTheme: const IconThemeData(
-          size: 28,
-          color: Colors.black,
-        ),
         actions: [
           Container(
             margin: const EdgeInsets.fromLTRB(0, 8, 30, 8),
             child: GestureDetector(
               child: const Icon(
                 FontAwesomeIcons.bell,
-                size: 28,
               ),
               onTap: () async {
                 FocusScope.of(context).unfocus();
@@ -57,10 +51,10 @@ class _AddEditTodoState extends State<AddEditTodo> {
                   print('change $date in time zone ' +
                       date.timeZoneOffset.inHours.toString());
                 }, onConfirm: (date) {
-                  setreminder = true;
+                  setReminder = true;
                   print('confirm $date');
                   setState(() {
-                    reminderdate = date;
+                    reminderDate = date;
                   });
                 }, locale: LocaleType.pl);
               },
@@ -71,26 +65,30 @@ class _AddEditTodoState extends State<AddEditTodo> {
             child: GestureDetector(
               child: const Icon(
                 Icons.check,
-                size: 28,
               ),
               onTap: () {
                 if (widget.toDo != null) {
                   NotificationApi.showScheduledNotification(
-                      title: tasktitle.text,
+                      title: taskTitle.text,
                       body: 'Pamiętaj o swoich rzeczach do zrobienia!',
-                      scheduleDate: reminderdate);
-                  provider.editToDo(widget.toDo!, tasktitle.text,
-                      widget.toDo!.thingstodo, widget.toDo!.isChecked);
+                      scheduleDate: reminderDate);
+                  provider.editToDo(
+                    widget.toDo!,
+                    taskTitle.text,
+                    widget.toDo!.thingstodo,
+                    widget.toDo!.isChecked,
+                  );
 
                   Navigator.of(context).popUntil((_) => count++ >= 2);
                 } else {
                   provider.addTodo(
-                      tasktitle.text, tasklist, setreminder, reminderdate);
-                  if (setreminder == true) {
+                      taskTitle.text, taskList, setReminder, reminderDate);
+                  if (setReminder) {
                     NotificationApi.showScheduledNotification(
-                        title: tasktitle.text,
-                        body: 'Pamiętaj o swoich rzeczach do zrobienia!',
-                        scheduleDate: reminderdate);
+                      title: taskTitle.text,
+                      body: 'Pamiętaj o swoich rzeczach do zrobienia!',
+                      scheduleDate: reminderDate,
+                    );
                   }
                   Navigator.pop(context);
                 }
@@ -110,7 +108,7 @@ class _AddEditTodoState extends State<AddEditTodo> {
                 children: [
                   TextFormField(
                     style: Theme.of(context).textTheme.headline3,
-                    controller: tasktitle,
+                    controller: taskTitle,
                     decoration: const InputDecoration(
                       hintText: "Tytuł listy",
                     ),
@@ -134,13 +132,13 @@ class _AddEditTodoState extends State<AddEditTodo> {
                         return validationAlert();
                       } else {
                         setState(() {
-                          tasklist.add(giventask);
-                          listitem.clear();
+                          taskList.add(giventask);
+                          listItem.clear();
                           myFocusNode.requestFocus();
                         });
                       }
                     },
-                    controller: listitem,
+                    controller: listItem,
                     decoration: const InputDecoration(
                       hintText: "Dodaj zadanie do listy",
                     ),
@@ -156,11 +154,11 @@ class _AddEditTodoState extends State<AddEditTodo> {
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: tasklist.length,
+                    itemCount: taskList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return ListTile(
                         title: Text(
-                          tasklist[index],
+                          taskList[index],
                           style: Theme.of(context).textTheme.headline1,
                         ),
                       );

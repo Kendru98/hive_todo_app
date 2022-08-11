@@ -56,7 +56,10 @@ class _DetailsTodoState extends State<DetailsTodo> {
               maxLines: 2,
               style: Theme.of(context).textTheme.headline1,
             ),
-            Text(date, style: Theme.of(context).textTheme.headline2),
+            Text(
+              date,
+              style: Theme.of(context).textTheme.headline2,
+            ),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -64,15 +67,19 @@ class _DetailsTodoState extends State<DetailsTodo> {
               itemBuilder: (BuildContext context, int index) {
                 return CheckboxListTile(
                   controlAffinity: ListTileControlAffinity.leading,
-                  title: Text(widget.todo.thingstodo[index],
-                      style: Theme.of(context).textTheme.headline1),
+                  title: Text(
+                    widget.todo.thingstodo[index],
+                    style: Theme.of(context).textTheme.headline1,
+                  ),
                   value: widget.todo.isChecked[index],
                   onChanged: (value) {
                     setState(
                       () {
                         widget.todo.isChecked[index] = value!;
                         provider.countProgress(
-                            widget.todo.isChecked, widget.todo);
+                          widget.todo.isChecked,
+                          widget.todo,
+                        );
                       },
                     );
                   },

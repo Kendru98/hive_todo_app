@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool switchstate = UserSimplePreferences.getDarkTheme() ?? false;
+    final bool switchState = UserSimplePreferences.getDarkTheme() ?? false;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -60,13 +60,13 @@ class _HomePageState extends State<HomePage> {
               color: Colors.yellowAccent,
             ),
             CupertinoSwitch(
-              value: switchstate,
+              value: switchState,
               onChanged: (bool newValue) {
                 setState(() {
-                  switchstate;
+                  switchState;
                 });
 
-                final provider = context.read()<ThemeProvider>();
+                final provider = context.read<ThemeProvider>();
                 provider.swapTheme();
               },
             ),
@@ -80,43 +80,55 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Consumer<TodoListController>(
         builder: (context, provider, child) {
+          final toDoProvider = provider.toDoList;
+
           return ListView.builder(
-            itemCount: provider.toDoList.length,
-            itemBuilder: (context, index) => Card(
-              child: ListTile(
-                title: Text(provider.toDoList[index].name,
-                    maxLines: 2, style: Theme.of(context).textTheme.headline1),
-                trailing: Text(
+            itemCount: toDoProvider.length,
+            itemBuilder: (context, index) {
+              final providerIndex = toDoProvider[index];
+              return Card(
+                child: ListTile(
+                  title: Text(
+                    providerIndex.name,
+                    maxLines: 2,
+                    style: Theme.of(context).textTheme.headline1,
+                  ),
+                  trailing: Text(
                     'Utworzony: \n' +
-                        DateFormat.yMMMd('pl')
-                            .format(provider.toDoList[index].createdDate),
-                    style: Theme.of(context).textTheme.headline2),
-                subtitle: Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: new LinearPercentIndicator(
+                        DateFormat.yMMMd('pl').format(
+                          providerIndex.createdDate,
+                        ),
+                    style: Theme.of(context).textTheme.headline2,
+                  ),
+                  subtitle: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: new LinearPercentIndicator(
                       width: MediaQuery.of(context).size.width - 200,
                       animation: true,
-                      lineHeight: 20.0,
+                      lineHeight: 20,
                       animationDuration: 2000,
-                      percent: provider.toDoList[index].progress / 100,
+                      percent: providerIndex.progress / 100,
                       center: Text(
-                          '${provider.toDoList[index].progress.toStringAsFixed(1)} %'),
+                          '${providerIndex.progress.toStringAsFixed(1)} %'),
                       barRadius: Radius.circular(20),
-                      progressColor:
-                          checkProgress(provider.toDoList[index].progress)),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetailsTodo(
-                        todo: provider.toDoList[index],
+                      progressColor: checkProgress(
+                        providerIndex.progress,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailsTodo(
+                          todo: providerIndex,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           );
         },
       ),

@@ -9,7 +9,6 @@ class TodoListController extends ChangeNotifier {
   var box = Boxes.getToDos();
   TodoListController() {
     _fetchTodos();
-    notifyListeners();
   }
 
   void _fetchTodos() {
@@ -36,8 +35,8 @@ class TodoListController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteTodo(ToDo todo) async {
-    await todo.delete();
+  Future<void> deleteTodo(ToDo toDo) async {
+    await toDo.delete();
     _fetchTodos();
   }
 

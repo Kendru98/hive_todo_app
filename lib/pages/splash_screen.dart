@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_todo_app/pages/homepage.dart';
 import 'package:hive_todo_app/utils/user_preferences.dart';
-
-import 'pages/homepage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

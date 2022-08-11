@@ -10,7 +10,7 @@ class ThemeProvider extends ChangeNotifier {
         FloatingActionButtonThemeData(backgroundColor: Colors.amber),
     appBarTheme: AppBarTheme(
       color: Color.fromARGB(127, 210, 197, 232),
-      iconTheme: IconThemeData(color: Colors.black),
+      iconTheme: IconThemeData(color: Colors.black, size: 24),
     ),
     primaryColor: Colors.white,
     cardTheme: CardTheme(color: Colors.white),
@@ -44,7 +44,7 @@ class ThemeProvider extends ChangeNotifier {
         FloatingActionButtonThemeData(backgroundColor: Colors.amber),
     appBarTheme: AppBarTheme(
       color: Color.fromARGB(127, 210, 197, 232),
-      iconTheme: IconThemeData(color: Colors.white),
+      iconTheme: IconThemeData(color: Colors.white, size: 24),
     ),
     primaryColor: Color(0xFFd2c5e8),
     cardTheme: CardTheme(
@@ -78,8 +78,14 @@ class ThemeProvider extends ChangeNotifier {
 
   Future<void> swapTheme() async {
     UserSimplePreferences.init();
-    _selectedTheme != light ? _selectedTheme = dark : _selectedTheme = light;
-    await UserSimplePreferences.setDarkTheme(true);
+    if (_selectedTheme != light) {
+      _selectedTheme = light;
+      await UserSimplePreferences.setDarkTheme(false);
+    } else {
+      _selectedTheme = dark;
+      await UserSimplePreferences.setDarkTheme(true);
+    }
+
     notifyListeners();
   }
 
